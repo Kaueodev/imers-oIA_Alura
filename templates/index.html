@@ -27,8 +27,11 @@
         </section>
 
         <main class="main-content">
-            <textarea id="textoJuridico" class="input-text"
-                placeholder="Cole aqui o texto jurídico que você deseja simplificar..."></textarea>
+            <div class="input-area">
+                <label for="pdfInput" class="action-button">Selecionar PDF</label>
+                <input type="file" id="pdfInput" class="input-file" accept=".pdf" style="display:none;">
+                <textarea id="textoJuridico" class="input-text" placeholder="Ou cole o texto aqui..."></textarea>
+            </div>
             <button class="action-button" onclick="simplificar()">Simplificar Texto</button>
 
             <div id="loading" class="loading-indicator" style="display:none;">
@@ -46,8 +49,52 @@
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
+         const pdfInput = document.getElementById('pdfInput');
+        const textoJuridicoInput = document.getElementById('textoJuridico');
+        const resultadoDiv = document.getElementById('resultado');
+        const loadingDiv = document.getElementById('loading');
+        const errorDiv = document.getElementById('errorDisplay');
+
+        pdfInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            resultadoDiv.innerHTML = '';
+            errorDiv.style.display = 'none';
+            errorDiv.innerHTML = '';
+
+            loadingDiv.style.display = 'block';
+
+            try {
+                const formData = new FormData();
+                formData.append('pdf_file', file);
+
+                const response = await fetch('/extrair_texto_pdf', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro ao extrair texto do PDF: ${response.status}`);
+                }
+
+                const data = await response.json();
+                textoJuridicoInput.value = data.texto;
+
+            } catch (error) {
+                errorDiv.innerHTML = error.message;
+                errorDiv.style.display = 'block';
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        });
+
         async function simplificar() {
-            const texto = document.getElementById('textoJuridico').value;
+            // ... (O código da função simplificar permanece o mesmo)
+        }
+        async function simplificar() {
+            const pdfInput = document.getElementById('pdfInput');
+            const textoJuridicoInput = document.getElementById('textoJuridico');
             const resultadoDiv = document.getElementById('resultado');
             const loadingDiv = document.getElementById('loading');
             const errorDiv = document.getElementById('errorDisplay');
@@ -56,8 +103,48 @@
             errorDiv.style.display = 'none';
             errorDiv.innerHTML = '';
 
+            let texto = '';
+
+            if (pdfInput.files.length > 0) {
+                const file = pdfInput.files[0];
+                const formData = new FormData();
+                formData.append('pdf_file', file);
+
+                loadingDiv.style.display = 'block';
+
+                try {
+                    const response = await fetch('/extrair_texto_pdf', {  // Nova rota no servidor
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Erro ao extrair texto do PDF: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    texto = data.texto;
+                    textoJuridicoInput.value = texto; // Exibe o texto extraído na textarea
+
+                } catch (error) {
+                    loadingDiv.style.display = 'none';
+                    errorDiv.innerHTML = error.message;
+                    errorDiv.style.display = 'block';
+                    return;
+                } finally {
+                    loadingDiv.style.display = 'none';
+                }
+
+            } else if (textoJuridicoInput.value.trim()) {
+                texto = textoJuridicoInput.value;
+            } else {
+                errorDiv.innerHTML = "Por favor, insira um texto ou selecione um arquivo PDF.";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
             if (!texto.trim()) {
-                errorDiv.innerHTML = "Por favor, insira algum texto para simplificar.";
+                errorDiv.innerHTML = "Nenhum texto para processar.";
                 errorDiv.style.display = 'block';
                 return;
             }

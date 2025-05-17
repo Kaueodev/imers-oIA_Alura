@@ -2,12 +2,12 @@ import os
 import google.generativeai as genai
 from flask import Flask, request, jsonify, render_template
 from dotenv import load_dotenv
+import fitz  # PyMuPDF
 
-load_dotenv() # Carrega as variáveis do arquivo .env
+load_dotenv()
 
 app = Flask(__name__)
 
-# Configuração da API Key do Google
 try:
     api_key = os.getenv("GOOGLE_API_KEY")
     if not api_key:
@@ -16,7 +16,6 @@ try:
 except Exception as e:
     print(f"Erro ao configurar a API Key: {e}")
 
-# Configuração do modelo Gemini
 generation_config = {
     "temperature": 0.7, 
     "top_p": 1,
@@ -39,39 +38,62 @@ model = genai.GenerativeModel(
 
 @app.route('/')
 def index():
-    
     return render_template('index.html')
+
+@app.route('/extrair_texto_pdf', methods=['POST'])
+def extrair_texto_do_pdf():
+    if 'pdf_file' not in request.files:
+        return jsonify({'erro': 'Nenhum arquivo enviado'}), 400
+
+    pdf_file = request.files['pdf_file']
+    if pdf_file.filename == '':
+        return jsonify({'erro': 'Nome de arquivo vazio'}), 400
+
+    try:
+        doc = fitz.open(stream=pdf_file.read(), filetype="pdf")
+        text = ""
+        for page in doc:
+            text += page.get_text()
+        doc.close()
+        return jsonify({'texto': text})
+
+    except Exception as e:
+        return jsonify({'erro': 'Erro ao extrair texto do PDF', 'detalhes': str(e)}), 500
 
 @app.route('/simplificar', methods=['POST'])
 def simplificar_texto():
     if not request.is_json:
-        return jsonify({"erro": "Request deve ser JSON"}), 400
-
-    data = request.get_json()
-    texto_juridico = data.get('texto')
+        data = request.form  # Tenta ler do formulário (upload de arquivo)
+        if not data:
+            return jsonify({"erro": "Request deve ser JSON ou form-data"}), 400
+        texto_juridico = data.get('texto')
+    else:
+        data = request.get_json()
+        texto_juridico = data.get('texto')
 
     if not texto_juridico:
         return jsonify({"erro": "Nenhum texto fornecido"}), 400
+    
+    print('Texo jurídico recebido:', texto_juridico)
 
     try:
-        
         prompt_parts = [
-            "Você é um especialista em tradução jurídica, com a capacidade de analisar textos complexos e apresentar suas informações de forma clara e acessível ao público não especializado. Sua tarefa é reescrevê-lo de maneira didática, explicando os principais pontos abordados, os direitos e deveres das partes envolvidas, e esclarecendo o significado de quaisquer termos técnicos ou jargões jurídicos que possam dificultar a compreensão para um leigo. A sua explicação deve ser objetiva e informativa, mantendo um tom sério e profissional, porém sem excesso de formalidades que possam afastar o leitor. O objetivo é tornar o conteúdo jurídico compreensível para todos. **Importante:** A presente explicação possui caráter informativo e não substitui a consulta a um profissional jurídico qualificado para análise e aconselhamento específicos sobre o caso em questão."
+            "Você é um especialista em análise e simplificação de textos jurídicos complexos. Sua missão é ler cuidadosamente documentos legais e transformá-los em uma linguagem clara, acessível e direta, como se você estivesse explicando a um amigo ou familiar sem conhecimento prévio em direito. Mantenha um tom sério e objetivo, garantindo a precisão das informações, mas evite jargões técnicos desnecessários e construções frasais rebuscadas. Ao apresentar a versão simplificada, destaque de forma explícita e inequívoca os pontos MAIS IMPORTANTES do texto original. Utilize recursos como frases curtas, exemplos práticos (se aplicável) e formatação (como negrito ou marcadores) para enfatizar esses pontos cruciais e garantir que qualquer pessoa possa compreender a essência do documento e suas implicações. Importante: Ao final da sua análise e simplificação, inclua a seguinte mensagem para o usuário: 'Esta é uma versão simplificada para facilitar a compreensão. Para informações precisas e aconselhamento legal, consulte sempre um profissional da área jurídica.",
             "Texto jurídico para análise:",
             texto_juridico,
             "Sua explicação simplificada:"
         ]
 
-        print("Enviando prompt para o Gemini...") # Log para debug
+        print("Enviando prompt para o Gemini...")
         response = model.generate_content(prompt_parts)
-        print("Resposta recebida do Gemini.") # Log para debug
+        print("Resposta recebida do Gemini.")
 
         texto_simplificado = response.text
         return jsonify({"texto_simplificado": texto_simplificado})
 
     except Exception as e:
-        print(f"Erro ao chamar a API do Gemini: {e}") # Log para debug
+        print(f"Erro ao chamar a API do Gemini: {e}")
         return jsonify({"erro": "Erro ao processar o texto com a IA", "detalhes": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run(debug=True)
