@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lex Simplifica IA</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 8px; }
+        h1 { text-align: center; color: #2c3e50; }
+        textarea { width: 95%; min-height: 150px; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        button { display: block; width: 100%; padding: 10px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #2980b9; }
+        #resultado { margin-top: 20px; padding: 15px; background-color: #eafaf1; border: 1px solid #c3e6cb; border-radius: 4px; white-space: pre-wrap; } /* pre-wrap para manter quebras de linha */
+        .loading { text-align: center; margin-top: 15px; font-style: italic; }
+        .error { margin-top: 15px; padding: 10px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 4px;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Lex Simplifica IA 🤖</h1>
+        <p>Cole o texto jurídico abaixo e clique em "Simplificar" para uma explicação clara e didática.</p>
+
+        <textarea id="textoJuridico" placeholder="Cole o texto jurídico aqui..."></textarea>
+        <button onclick="simplificar()">Simplificar Texto</button>
+
+        <div id="loading" class="loading" style="display:none;">Processando... Aguarde, por favor. ✨</div>
+        <div id="errorDisplay" class="error" style="display:none;"></div>
+        <div id="resultado">
+            </div>
+    </div>
+
+    <script>
+        async function simplificar() {
+            const texto = document.getElementById('textoJuridico').value;
+            const resultadoDiv = document.getElementById('resultado');
+            const loadingDiv = document.getElementById('loading');
+            const errorDiv = document.getElementById('errorDisplay');
+
+            resultadoDiv.innerHTML = ''; // Limpa resultado anterior
+            errorDiv.style.display = 'none'; // Esconde erro anterior
+            errorDiv.innerHTML = '';
+
+            if (!texto.trim()) {
+                errorDiv.innerHTML = "Por favor, insira algum texto para simplificar.";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            loadingDiv.style.display = 'block';
+
+            try {
+                const response = await fetch('/simplificar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ texto: texto })
+                });
+
+                loadingDiv.style.display = 'none';
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.erro || `Erro do servidor: ${response.status}`);
+                }
+
+                const data = await response.json();
+                resultadoDiv.innerHTML = `<p><strong>Explicação Simplificada:</strong></p><p>${data.texto_simplificado.replace(/\n/g, '<br>')}</p>`; // Adiciona <br> para quebras de linha
+
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                console.error('Erro ao simplificar:', error);
+                errorDiv.innerHTML = `Ocorreu um erro: ${error.message}`;
+                errorDiv.style.display = 'block';
+                resultadoDiv.innerHTML = '<p>Não foi possível obter a simplificação.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
