@@ -14,7 +14,7 @@ Sabe aquele contrato de 50 páginas que parece um enigma? 📜 =&gt; ✨POOF✨ 
 
 ## Como usar essa maravilha? 🚀
 
-[Assista à demonstração em vídeo](https://www.youtube.com/watch?v=abcdef123)
+[🎥 Assista à demonstração em vídeo:](https://youtu.be/l5jMTPCu25s)
 
 1.  **Dê o texto pra LexIA:** Você pode colar o texto na área indicada ou fazer upload de um arquivo PDF. 📂
 2.  **Clique no botão "Simplificar":** E deixe a IA fazer o resto! ✨
