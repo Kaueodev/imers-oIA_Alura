@@ -1,0 +1,219 @@
+/* Geral */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    /* background-color: #f5f8fa;  Remova esta linha */
+    background-image: linear-gradient(to bottom, #1a2a6c, #2e477e);
+    /* Degradê azul escuro */
+    color: #ffffff;
+    /* Cor do texto alterada para branco */
+    line-height: 1.6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    transition: background-color 0.3s ease;
+}
+
+.container {
+    background-color: rgba(255, 255, 255, 0.08);
+    /* Fundo do container translúcido */
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    margin: 20px;
+    padding: 30px;
+    width: 80%;
+    max-width: 800px;
+    backdrop-filter: blur(10px);
+    /* Efeito de vidro borrado */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.container:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.title {
+    color: #ffffff;
+    /* Títulos em branco */
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    animation: fadeIn 1s ease-out;
+}
+
+.description {
+    color: #d1d5db;
+    /* Descrição em cinza claro */
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+/* Explicação */
+.explanation {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.explanation p {
+    color: #e5e7eb;
+    font-size: 1.1em;
+}
+
+/* Formulário */
+.input-text {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    font-size: 1em;
+    resize: vertical;
+    box-sizing: border-box;
+    outline: none;
+    color: #ffffff;
+    transition: border-color 0.3s ease-in-out;
+}
+
+.input-text::placeholder {
+    color: #a3a8b1;
+}
+
+.input-text:focus {
+    border-color: #6366f1;
+}
+
+.action-button {
+    background-color: #6366f1;
+    color: white;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+    outline: none;
+}
+
+.action-button:hover {
+    background-color: #4f46e5;
+    transform: scale(1.02);
+}
+
+/* Feedback */
+.loading-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #93c5fd;
+    margin-top: 20px;
+    font-size: 1.1em;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.spinner {
+    border: 5px solid rgba(255, 255, 255, 0.1);
+    border-left-color: #93c5fd;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.error-message {
+    background-color: rgba(248, 215, 218, 0.2);
+    color: #f8d7da;
+    border: 1px solid rgba(245, 198, 203, 0.2);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-10px);
+    }
+
+    20%, 40%, 60%, 80% {
+        transform: translateX(10px);
+    }
+}
+
+/* Resultado */
+.result-area {
+    background-color: rgba(240, 249, 255, 0.1);
+    border: 1px solid rgba(186, 230, 253, 0.2);
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 25px;
+    white-space: pre-wrap;
+    color: #ffffff;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.result-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #93c5fd;
+    margin-bottom: 10px;
+}
+
+.result-text {
+    font-size: 1em;
+}
+
+.result-empty {
+    font-style: italic;
+    color: #a3a8b1;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(226, 232, 240, 0.2);
+    color: #a3a8b1;
+    font-size: 0.9em;
+    animation: fadeIn 1s ease-out;
+}
+
+/* Main Content */
+.main-content {
+    margin-bottom: 20px;
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

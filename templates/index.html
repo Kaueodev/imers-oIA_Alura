@@ -1,35 +1,50 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LexIA</title>
-    <style>
-        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 8px; }
-        h1 { text-align: center; color: #2c3e50; }
-        textarea { width: 95%; min-height: 150px; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; }
-        button { display: block; width: 100%; padding: 10px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background-color: #2980b9; }
-        #resultado { margin-top: 20px; padding: 15px; background-color: #eafaf1; border: 1px solid #c3e6cb; border-radius: 4px; white-space: pre-wrap; } /* pre-wrap para manter quebras de linha */
-        .loading { text-align: center; margin-top: 15px; font-style: italic; }
-        .error { margin-top: 15px; padding: 10px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 4px;}
-    </style>
+    <title>LexIA - Simplificador de Textos Jurídicos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="container">
-        <h1>LexIA 🤖</h1>
-        <p>Cole o texto jurídico abaixo e clique em "Simplificar" para uma explicação clara e didática.</p>
+        <header class="header">
+            <h1 class="title">LexIA 🤖</h1>
+            <p class="description">
+                Transformando o Juridiquês em Linguagem Acessível.
+            </p>
+        </header>
 
-        <textarea id="textoJuridico" placeholder="Cole o texto jurídico aqui..."></textarea>
-        <button onclick="simplificar()">Simplificar Texto</button>
+        <section class="explanation">
+            <p>
+                LexIA é uma ferramenta inovadora projetada para simplificar textos jurídicos complexos, tornando-os fáceis de entender para todos.
+                Basta colar o texto na área abaixo e clicar em "Simplificar" para obter uma versão clara e didática.
+            </p>
+        </section>
 
-        <div id="loading" class="loading" style="display:none;">Processando... Aguarde, por favor. ✨</div>
-        <div id="errorDisplay" class="error" style="display:none;"></div>
-        <div id="resultado">
+        <main class="main-content">
+            <textarea id="textoJuridico" class="input-text"
+                placeholder="Cole aqui o texto jurídico que você deseja simplificar..."></textarea>
+            <button class="action-button" onclick="simplificar()">Simplificar Texto</button>
+
+            <div id="loading" class="loading-indicator" style="display:none;">
+                <div class="spinner"></div>
+                Processando... Aguarde, por favor.
             </div>
+            <div id="errorDisplay" class="error-message" style="display:none;"></div>
+            <div id="resultado" class="result-area"></div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 LexIA. Todos os direitos reservados.</p>
+        </footer>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
         async function simplificar() {
             const texto = document.getElementById('textoJuridico').value;
@@ -37,8 +52,8 @@
             const loadingDiv = document.getElementById('loading');
             const errorDiv = document.getElementById('errorDisplay');
 
-            resultadoDiv.innerHTML = ''; // Limpa resultado anterior
-            errorDiv.style.display = 'none'; // Esconde erro anterior
+            resultadoDiv.innerHTML = '';
+            errorDiv.style.display = 'none';
             errorDiv.innerHTML = '';
 
             if (!texto.trim()) {
@@ -66,16 +81,19 @@
                 }
 
                 const data = await response.json();
-                resultadoDiv.innerHTML = `<p><strong>Explicação Simplificada:</strong></p><p>${data.texto_simplificado.replace(/\n/g, '<br>')}</p>`; // Adiciona <br> para quebras de linha
+                const markdownText = data.texto_simplificado;
+                const htmlText = marked.parse(markdownText);
+                resultadoDiv.innerHTML = `<p class="result-title">Explicação Simplificada:</p><div class="result-text">${htmlText}</div>`;
 
             } catch (error) {
                 loadingDiv.style.display = 'none';
                 console.error('Erro ao simplificar:', error);
                 errorDiv.innerHTML = `Ocorreu um erro: ${error.message}`;
                 errorDiv.style.display = 'block';
-                resultadoDiv.innerHTML = '<p>Não foi possível obter a simplificação.</p>';
+                resultadoDiv.innerHTML = '<p class="result-empty">Não foi possível obter a simplificação.</p>';
             }
         }
     </script>
 </body>
+
 </html>

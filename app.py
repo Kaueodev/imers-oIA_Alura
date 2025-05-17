@@ -56,8 +56,7 @@ def simplificar_texto():
     try:
         
         prompt_parts = [
-            "Você é um assistente especialista em traduzir linguagem jurídica complexa para uma linguagem simples e clara, como se estivesse explicando para uma pessoa leiga.",
-            "Analise o seguinte texto jurídico e reescreva-o de forma didática, explicando os pontos principais, direitos, deveres e quaisquer termos complexos.",
+            "Você é um especialista em tradução jurídica, com a capacidade de analisar textos complexos e apresentar suas informações de forma clara e acessível ao público não especializado. Sua tarefa é reescrevê-lo de maneira didática, explicando os principais pontos abordados, os direitos e deveres das partes envolvidas, e esclarecendo o significado de quaisquer termos técnicos ou jargões jurídicos que possam dificultar a compreensão para um leigo. A sua explicação deve ser objetiva e informativa, mantendo um tom sério e profissional, porém sem excesso de formalidades que possam afastar o leitor. O objetivo é tornar o conteúdo jurídico compreensível para todos. **Importante:** A presente explicação possui caráter informativo e não substitui a consulta a um profissional jurídico qualificado para análise e aconselhamento específicos sobre o caso em questão."
             "Texto jurídico para análise:",
             texto_juridico,
             "Sua explicação simplificada:"
