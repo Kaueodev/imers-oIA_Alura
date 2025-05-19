@@ -26,7 +26,7 @@ Sabe aquele contrato de 50 páginas que parece um enigma? 📜 =&gt; ✨POOF✨ 
 * **Flask:** Pra fazer a mágica acontecer na web. 🌐
 * **Google Gemini:** A IA que simplifica tudo! 🤯
 * **HTML, CSS e JavaScript:** Pra deixar tudo bonitão e fácil de usar. 🎨
-* **PyMuPDF (fitz):** Para extrair o texto dos PDFs[cite: 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]. 
+* **PyMuPDF (fitz):** Para extrair o texto dos PDFs
 * **dotenv:** Para carregar as variáveis de ambiente de forma segura. 🤫
 
 ## Como rodar localmente? 🏃‍♀️💨
