@@ -1,186 +1,215 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LexIA - Simplificador de Textos Jurídicos</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-</head>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='favicon.ico') }}"
+      type="image/x-icon"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
 
-<body>
+  <body>
     <div class="container">
-        <header class="header">
-            <h1 class="title">LexIA 🤖</h1>
-            <p class="description">
-                Transformando o Juridiquês em Linguagem Acessível.
-            </p>
-        </header>
+      <header class="header">
+        <h1 class="title">LexIA 🤖</h1>
+        <p class="description">
+          Transformando o Juridiquês em Linguagem Acessível.
+        </p>
+      </header>
 
-        <section class="explanation">
-            <p>
-                LexIA é uma ferramenta inovadora projetada para simplificar textos jurídicos complexos, tornando-os fáceis de entender para todos.
-                Basta colar o texto na área abaixo e clicar em "Simplificar" para obter uma versão clara e didática.
-            </p>
-        </section>
+      <section class="explanation">
+        <p>
+          LexIA é uma ferramenta inovadora projetada para simplificar textos
+          jurídicos complexos, tornando-os fáceis de entender para todos. Basta
+          colar o texto na área abaixo e clicar em "Simplificar" para obter uma
+          versão clara e didática.
+        </p>
+      </section>
 
-        <main class="main-content">
-            <div class="input-area">
-                <label for="pdfInput" class="action-button">Selecionar PDF</label>
-                <input type="file" id="pdfInput" class="input-file" accept=".pdf" style="display:none;">
-                <textarea id="textoJuridico" class="input-text" placeholder="Ou cole o texto aqui..."></textarea>
-            </div>
-            <button class="action-button" onclick="simplificar()">Simplificar Texto</button>
+      <main class="main-content">
+        <div class="input-area">
+          <label for="pdfInput" class="action-button">Selecionar PDF</label>
+          <input
+            type="file"
+            id="pdfInput"
+            class="input-file"
+            accept=".pdf"
+            style="display: none"
+          />
+          <textarea
+            id="textoJuridico"
+            class="input-text"
+            placeholder="Ou cole o texto aqui..."
+          ></textarea>
+        </div>
+        <button class="action-button" onclick="simplificar()">
+          Simplificar Texto
+        </button>
 
-            <div id="loading" class="loading-indicator" style="display:none;">
-                <div class="spinner"></div>
-                Processando... Aguarde, por favor.
-            </div>
-            <div id="errorDisplay" class="error-message" style="display:none;"></div>
-            <div id="resultado" class="result-area"></div>
-        </main>
+        <div id="loading" class="loading-indicator" style="display: none">
+          <div class="spinner"></div>
+          Processando... Aguarde, por favor.
+        </div>
+        <div
+          id="errorDisplay"
+          class="error-message"
+          style="display: none"
+        ></div>
+        <div id="resultado" class="result-area"></div>
+      </main>
 
-        <footer class="footer">
-            <p>&copy; 2024 LexIA. Todos os direitos reservados.</p>
-        </footer>
+      <footer class="footer">
+        <p>&copy; 2024 LexIA. Todos os direitos reservados.</p>
+      </footer>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
-         const pdfInput = document.getElementById('pdfInput');
-        const textoJuridicoInput = document.getElementById('textoJuridico');
-        const resultadoDiv = document.getElementById('resultado');
-        const loadingDiv = document.getElementById('loading');
-        const errorDiv = document.getElementById('errorDisplay');
+      const pdfInput = document.getElementById("pdfInput");
+      const textoJuridicoInput = document.getElementById("textoJuridico");
+      const resultadoDiv = document.getElementById("resultado");
+      const loadingDiv = document.getElementById("loading");
+      const errorDiv = document.getElementById("errorDisplay");
 
-        pdfInput.addEventListener('change', async (event) => {
-            const file = event.target.files[0];
-            if (!file) return;
+      pdfInput.addEventListener("change", async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
 
-            resultadoDiv.innerHTML = '';
-            errorDiv.style.display = 'none';
-            errorDiv.innerHTML = '';
+        resultadoDiv.innerHTML = "";
+        errorDiv.style.display = "none";
+        errorDiv.innerHTML = "";
 
-            loadingDiv.style.display = 'block';
+        loadingDiv.style.display = "block";
 
-            try {
-                const formData = new FormData();
-                formData.append('pdf_file', file);
+        try {
+          const formData = new FormData();
+          formData.append("pdf_file", file);
 
-                const response = await fetch('/extrair_texto_pdf', {
-                    method: 'POST',
-                    body: formData,
-                });
+          const response = await fetch("/extrair_texto_pdf", {
+            method: "POST",
+            body: formData,
+          });
 
-                if (!response.ok) {
-                    throw new Error(`Erro ao extrair texto do PDF: ${response.status}`);
-                }
+          if (!response.ok) {
+            throw new Error(`Erro ao extrair texto do PDF: ${response.status}`);
+          }
 
-                const data = await response.json();
-                textoJuridicoInput.value = data.texto;
-
-            } catch (error) {
-                errorDiv.innerHTML = error.message;
-                errorDiv.style.display = 'block';
-            } finally {
-                loadingDiv.style.display = 'none';
-            }
-        });
-
-        async function simplificar() {
-            // ... (O código da função simplificar permanece o mesmo)
+          const data = await response.json();
+          textoJuridicoInput.value = data.texto;
+        } catch (error) {
+          errorDiv.innerHTML = error.message;
+          errorDiv.style.display = "block";
+        } finally {
+          loadingDiv.style.display = "none";
         }
-        async function simplificar() {
-            const pdfInput = document.getElementById('pdfInput');
-            const textoJuridicoInput = document.getElementById('textoJuridico');
-            const resultadoDiv = document.getElementById('resultado');
-            const loadingDiv = document.getElementById('loading');
-            const errorDiv = document.getElementById('errorDisplay');
+      });
 
-            resultadoDiv.innerHTML = '';
-            errorDiv.style.display = 'none';
-            errorDiv.innerHTML = '';
+      async function simplificar() {
+        // ... (O código da função simplificar permanece o mesmo)
+      }
+      async function simplificar() {
+        const pdfInput = document.getElementById("pdfInput");
+        const textoJuridicoInput = document.getElementById("textoJuridico");
+        const resultadoDiv = document.getElementById("resultado");
+        const loadingDiv = document.getElementById("loading");
+        const errorDiv = document.getElementById("errorDisplay");
 
-            let texto = '';
+        resultadoDiv.innerHTML = "";
+        errorDiv.style.display = "none";
+        errorDiv.innerHTML = "";
 
-            if (pdfInput.files.length > 0) {
-                const file = pdfInput.files[0];
-                const formData = new FormData();
-                formData.append('pdf_file', file);
+        let texto = "";
 
-                loadingDiv.style.display = 'block';
+        if (pdfInput.files.length > 0) {
+          const file = pdfInput.files[0];
+          const formData = new FormData();
+          formData.append("pdf_file", file);
 
-                try {
-                    const response = await fetch('/extrair_texto_pdf', {  // Nova rota no servidor
-                        method: 'POST',
-                        body: formData,
-                    });
+          loadingDiv.style.display = "block";
 
-                    if (!response.ok) {
-                        throw new Error(`Erro ao extrair texto do PDF: ${response.status}`);
-                    }
+          try {
+            const response = await fetch("/extrair_texto_pdf", {
+              // Nova rota no servidor
+              method: "POST",
+              body: formData,
+            });
 
-                    const data = await response.json();
-                    texto = data.texto;
-                    textoJuridicoInput.value = texto; // Exibe o texto extraído na textarea
-
-                } catch (error) {
-                    loadingDiv.style.display = 'none';
-                    errorDiv.innerHTML = error.message;
-                    errorDiv.style.display = 'block';
-                    return;
-                } finally {
-                    loadingDiv.style.display = 'none';
-                }
-
-            } else if (textoJuridicoInput.value.trim()) {
-                texto = textoJuridicoInput.value;
-            } else {
-                errorDiv.innerHTML = "Por favor, insira um texto ou selecione um arquivo PDF.";
-                errorDiv.style.display = 'block';
-                return;
+            if (!response.ok) {
+              throw new Error(
+                `Erro ao extrair texto do PDF: ${response.status}`
+              );
             }
 
-            if (!texto.trim()) {
-                errorDiv.innerHTML = "Nenhum texto para processar.";
-                errorDiv.style.display = 'block';
-                return;
-            }
-
-            loadingDiv.style.display = 'block';
-
-            try {
-                const response = await fetch('/simplificar', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ texto: texto })
-                });
-
-                loadingDiv.style.display = 'none';
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.erro || `Erro do servidor: ${response.status}`);
-                }
-
-                const data = await response.json();
-                const markdownText = data.texto_simplificado;
-                const htmlText = marked.parse(markdownText);
-                resultadoDiv.innerHTML = `<p class="result-title">Explicação Simplificada:</p><div class="result-text">${htmlText}</div>`;
-
-            } catch (error) {
-                loadingDiv.style.display = 'none';
-                console.error('Erro ao simplificar:', error);
-                errorDiv.innerHTML = `Ocorreu um erro: ${error.message}`;
-                errorDiv.style.display = 'block';
-                resultadoDiv.innerHTML = '<p class="result-empty">Não foi possível obter a simplificação.</p>';
-            }
+            const data = await response.json();
+            texto = data.texto;
+            textoJuridicoInput.value = texto; // Exibe o texto extraído na textarea
+          } catch (error) {
+            loadingDiv.style.display = "none";
+            errorDiv.innerHTML = error.message;
+            errorDiv.style.display = "block";
+            return;
+          } finally {
+            loadingDiv.style.display = "none";
+          }
+        } else if (textoJuridicoInput.value.trim()) {
+          texto = textoJuridicoInput.value;
+        } else {
+          errorDiv.innerHTML =
+            "Por favor, insira um texto ou selecione um arquivo PDF.";
+          errorDiv.style.display = "block";
+          return;
         }
+
+        if (!texto.trim()) {
+          errorDiv.innerHTML = "Nenhum texto para processar.";
+          errorDiv.style.display = "block";
+          return;
+        }
+
+        loadingDiv.style.display = "block";
+
+        try {
+          const response = await fetch("/simplificar", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ texto: texto }),
+          });
+
+          loadingDiv.style.display = "none";
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(
+              errorData.erro || `Erro do servidor: ${response.status}`
+            );
+          }
+
+          const data = await response.json();
+          const markdownText = data.texto_simplificado;
+          const htmlText = marked.parse(markdownText);
+          resultadoDiv.innerHTML = `<p class="result-title">Explicação Simplificada:</p><div class="result-text">${htmlText}</div>`;
+        } catch (error) {
+          loadingDiv.style.display = "none";
+          console.error("Erro ao simplificar:", error);
+          errorDiv.innerHTML = `Ocorreu um erro: ${error.message}`;
+          errorDiv.style.display = "block";
+          resultadoDiv.innerHTML =
+            '<p class="result-empty">Não foi possível obter a simplificação.</p>';
+        }
+      }
     </script>
-</body>
-
+  </body>
 </html>
